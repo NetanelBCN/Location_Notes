@@ -15,7 +15,7 @@
         android:padding="16dp">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/note_title"
+            android:id="@+id/note_card_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -27,7 +27,7 @@
             android:textStyle="bold" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/note_description"
+            android:id="@+id/note_card_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -40,12 +40,14 @@
 
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/note_timestamp"
+            android:id="@+id/note_card_MTV_created"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Jun 15, 2025"
             android:textColor="@android:color/darker_gray"
             android:textSize="12sp" />
+
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 </FrameLayout>

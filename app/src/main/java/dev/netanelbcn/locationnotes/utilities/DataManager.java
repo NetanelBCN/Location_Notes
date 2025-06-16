@@ -73,12 +73,14 @@ public class DataManager {
                         .setNote_location(new LatLng(32.0345, 34.8738))
         ));
 
+        this.notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
 
     }
 
 
     public void addNewNote(NoteItem note) {
         this.getNotes().add(note);
+        this.notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
         //add in firebase
     }
 

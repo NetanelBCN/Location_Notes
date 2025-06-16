@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
 
@@ -32,6 +32,9 @@ public class ListFragment extends Fragment {
     private FloatingActionButton Note_FAB_add;
     private RecyclerView ListRVNotes;
     private GenericAdapter<NoteItem> adapter;
+    private MaterialTextView note_card_title;
+    private MaterialTextView note_card_description;
+    private MaterialTextView note_card_MTV_created;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -51,13 +54,12 @@ public class ListFragment extends Fragment {
                 notes,
                 R.layout.note_card,
                 (holder, item, position) -> {
-                    TextView title = holder.itemView.findViewById(R.id.note_title);
-                    TextView description = holder.itemView.findViewById(R.id.note_description);
-                    TextView timestamp = holder.itemView.findViewById(R.id.note_timestamp);
-
-                    title.setText(item.getNote_title());
-                    description.setText(item.getNote_body());
-                    timestamp.setText(DataManager.getInstance().parseDateToString(item.getNote_date()));
+                    this.note_card_title = holder.itemView.findViewById(R.id.note_card_title);
+                    this.note_card_description = holder.itemView.findViewById(R.id.note_card_description);
+                    this.note_card_MTV_created = holder.itemView.findViewById(R.id.note_card_MTV_created);
+                    note_card_title.setText(item.getNote_title());
+                    note_card_description.setText(item.getNote_body());
+                    note_card_MTV_created.setText("Created at: " + DataManager.getInstance().parseDateToString(item.getNote_date()));
                 },
                 (item, position) -> editNote(item)
         );
@@ -76,16 +78,12 @@ public class ListFragment extends Fragment {
     private void editNote(NoteItem item) {
         DataManager.getInstance().setCurrent(item);
         startActivity(new Intent(requireContext(), Note_Screen.class));
-
-
     }
 
     private void setupClicks() {
         this.Note_FAB_add.setOnClickListener(v -> {
             DataManager.getInstance().setCurrent(null);
             startActivity(new Intent(requireContext(), Note_Screen.class));
-
-
         });
     }
 
