@@ -34,10 +34,10 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".views.Login_Reg_Activity"
+            android:name=".views.MainActivity"
             android:exported="true" />
         <activity
-            android:name=".views.MainActivity"
+            android:name=".views.Login_Reg_Activity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

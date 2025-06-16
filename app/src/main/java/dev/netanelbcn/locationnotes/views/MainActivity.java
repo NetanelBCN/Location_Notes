@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.textview.MaterialTextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -18,6 +19,7 @@ import dev.netanelbcn.locationnotes.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private MaterialTextView Main_MTV_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,11 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+        findViews();
+    }
 
+    private void findViews() {
+        this.Main_MTV_title=findViewById(R.id.Main_MTV_title);
     }
 
 

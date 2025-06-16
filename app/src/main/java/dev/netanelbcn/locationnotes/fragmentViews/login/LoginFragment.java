@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -22,6 +23,7 @@ import com.google.android.material.textview.MaterialTextView;
 
 import dev.netanelbcn.locationnotes.R;
 import dev.netanelbcn.locationnotes.databinding.FragmentLoginBinding;
+import dev.netanelbcn.locationnotes.utilities.DataManager;
 import dev.netanelbcn.locationnotes.utilities.FBManager;
 import dev.netanelbcn.locationnotes.utilities.Validator;
 import dev.netanelbcn.locationnotes.views.MainActivity;
@@ -29,7 +31,7 @@ import dev.netanelbcn.locationnotes.views.MainActivity;
 public class LoginFragment extends Fragment {
 
     private FragmentLoginBinding binding;
-    private FBManager fbManager;
+    private DataManager dataManager;
     private Validator validator;
     private MaterialTextView LoginMTVGotoReg;
     private MaterialButton LoginMBLogin;
@@ -44,7 +46,7 @@ public class LoginFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        fbManager = FBManager.getInstance();
+        dataManager = DataManager.getInstance();
         validator = Validator.getInstance();
         bindViews();
         setBackgroundImage();
@@ -99,16 +101,21 @@ public class LoginFragment extends Fragment {
 
     private boolean validateLoginArgs() {
         if (!checkNotEmptyLoginFields()) {
+            this.LoginMTVAlert.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.red)
+            );
             this.LoginMTVAlert.setText("Please fill all fields");
             return false;
         }
         if (!validator.isMailFormatValid(this.LoginTIETMail)) {
+            this.LoginMTVAlert.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.red)
+            );
             this.LoginMTVAlert.setText("Invalid mail format");
             return false;
         }
         return true;
     }
-
 
     private boolean checkNotEmptyLoginFields() {
         return
@@ -116,14 +123,35 @@ public class LoginFragment extends Fragment {
     }
 
     private void login(String mail, String password) {
-        fbManager.getmAuth().signInWithEmailAndPassword(mail, password)
+        // Show loading state
+        this.LoginMBLogin.setEnabled(false);
+        this.LoginMTVAlert.setTextColor(
+                ContextCompat.getColor(requireContext(), R.color.black)
+        );
+        this.LoginMTVAlert.setText("Logging in...");
+
+        dataManager.getFbManager().getmAuth().signInWithEmailAndPassword(mail, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Login successful
-                        Intent intent = new Intent(requireContext(), MainActivity.class);
-                        startActivity(intent);
-                        requireActivity().finish();
+                        DataManager.getInstance().setUserId(dataManager.getFbManager().getmAuth().getCurrentUser().getUid());
+                        DataManager.getInstance().setDataLoadListener(new DataManager.DataLoadListener() {
+                            @Override
+                            public void onDataLoaded() {
+                                // Data loaded successfully - now navigate to main activity
+                                if (getActivity() != null && !getActivity().isFinishing()) {
+                                    Intent intent = new Intent(requireContext(), MainActivity.class);
+                                    startActivity(intent);
+                                    requireActivity().finish();
+                                }
+                            }
+                        });
+                        this.LoginMTVAlert.setText("Loading data...");
+                        DataManager.getInstance().loadGeneralData();
                     } else {
+                        this.LoginMBLogin.setEnabled(true);
+                        this.LoginMTVAlert.setTextColor(
+                                ContextCompat.getColor(requireContext(), R.color.red)
+                        );
                         this.LoginMTVAlert.setText("Invalid user mail or password");
                         Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_LONG).show();
                     }
@@ -149,6 +177,10 @@ public class LoginFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Clear the data load listener to prevent memory leaks
+        if (dataManager != null) {
+            dataManager.setDataLoadListener(null);
+        }
         binding = null;
     }
 }

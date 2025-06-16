@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/Map_MTV_title"
+        android:id="@+id/Main_MTV_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/nav_view"
-        android:layout_below="@+id/Map_MTV_title"
+        android:layout_below="@+id/Main_MTV_title"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
 

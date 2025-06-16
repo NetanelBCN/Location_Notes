@@ -1,6 +1,7 @@
 package dev.netanelbcn.locationnotes.views;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -84,7 +85,7 @@ public class Note_Screen extends AppCompatActivity {
             this.Note_MTV_date.setText("Created date: " + dataManager.parseDateToString(dataManager.getCurrent().getNote_date()));
             this.Note_MTV_lastEditedDate.setText("Last edited date: " + dataManager.parseDateToString(dataManager.getCurrent().getNote_last_date()));
         } else {
-            LocalDateTime l=LocalDateTime.now();
+            LocalDateTime l = LocalDateTime.now();
             this.Note_MTV_date.setText("Created date: " + dataManager.parseDateToString(l));
             this.Note_MTV_lastEditedDate.setText("Last edited date: " + dataManager.parseDateToString(l));
 
@@ -141,6 +142,7 @@ public class Note_Screen extends AppCompatActivity {
                 .addOnFailureListener(e -> saveNoteWithLocation(title, body, fallback));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void saveNoteWithLocation(String title, String body, LatLng location) {
         NoteItem note = new NoteItem()
                 .setNote_title(title)
@@ -149,14 +151,15 @@ public class Note_Screen extends AppCompatActivity {
                 .setNote_location(location);
 
         if (dataManager.getCurrent() == null) {
-            dataManager.addNewNote(note);
+
+//            this.dataManager.getNotes().add(note);
+//            this.dataManager.getNotes().sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
+//            this.dataManager.getAdapter().notifyDataSetChanged();
+            dataManager.addNewNoteToDB(note);
         } else {
-            NoteItem current = dataManager.getCurrent();
-            current.setNote_title(title);
-            current.setNote_body(body);
-            current.setNote_last_date(LocalDateTime.now());
-            current.setNote_location(location);
+            dataManager.updateNote(note);
             dataManager.setCurrent(null);
+
         }
 
         finish();

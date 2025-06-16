@@ -1,30 +1,89 @@
 package dev.netanelbcn.locationnotes.utilities;
 
+import android.annotation.SuppressLint;
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import dev.netanelbcn.locationnotes.models.NoteItem;
+import dev.netanelbcn.myrv.GenericAdapter;
 
 public class DataManager {
 
     private ArrayList<NoteItem> notes;
+    private GenericAdapter<NoteItem> adapter;
+
+
     private static DataManager instance;
     private NoteItem current;
+    private final FBManager fbManager;
+
+    private String userId;
+    private String userName;
+
+
+
     private final LatLng defaultLocation = new LatLng(31.771959, 35.217018);
 
     public LatLng getDefaultLocation() {
         return defaultLocation;
     }
 
-    private DataManager() {
-
+    public GenericAdapter<NoteItem> getAdapter() {
+        return adapter;
     }
+
+    public DataManager setAdapter(GenericAdapter<NoteItem> adapter) {
+        this.adapter = adapter;
+        return this;
+    }
+
+    public FirebaseDatabase getFBDb() {
+        return this.fbManager.getFBDb();
+    }
+    public String getUserName() {
+        return userName;
+    }
+
+    public DataManager setUserName(String userName) {
+        this.userName = userName;
+        return this;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public FBManager getFbManager() {
+        return fbManager;
+    }
+
+    public DataManager setUserId(String userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    private DataManager() {
+        fbManager = FBManager.getInstance();
+        this.notes = new ArrayList<>();
+    }
+
 
     public ArrayList<NoteItem> getNotes() {
         return notes;
@@ -47,57 +106,168 @@ public class DataManager {
     public static DataManager getInstance() {
         if (instance == null) {
             instance = new DataManager();
-            instance.loadGeneralData();
         }
         return instance;
     }
 
     public void loadGeneralData() {
-        this.notes = new ArrayList<>(Arrays.asList(
-                new NoteItem().setNote_title("Meeting")
-                        .setNote_body("Call with client at 3 PM.")
-                        .setNote_date(LocalDateTime.of(2002, 5, 12, 12, 1))
-                        .setNote_pic_url("https://example.com/image1.jpg")
-                        .setNote_location(new LatLng(31.771959, 35.217018)),
-
-                new NoteItem().setNote_title("Groceries")
-                        .setNote_body("Milk, Eggs, Bread")
-                        .setNote_date(LocalDateTime.of(2012, 4, 11, 12, 1))
-                        .setNote_pic_url("https://example.com/image2.jpg")
-                        .setNote_location(new LatLng(32.0345, 34.8738)),
-
-                new NoteItem().setNote_title("Groceriesdaassssssssas")
-                        .setNote_body("Milk, Eggs, Breadsdsddadadadasdadadada")
-                        .setNote_date(LocalDateTime.of(2022, 1, 2, 12, 1))
-                        .setNote_pic_url("https://example.com/image2.jpg")
-                        .setNote_location(new LatLng(32.0345, 34.8738))
-        ));
-
-        this.notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
+        loadNotesFromFirebase();
+        Log.d("qwewq", this.getNotes().toString());
 
     }
 
-
-    public void addNewNote(NoteItem note) {
+    @SuppressLint("NotifyDataSetChanged")
+    public void addNewNoteToDB(NoteItem note) {
         this.getNotes().add(note);
-        this.notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
-        //add in firebase
+        this.getNotes().sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
+        this.getAdapter().notifyDataSetChanged();
+        if (userId != null && !userId.isEmpty()) {
+            Map<String, Object> noteData = new HashMap<>();
+            noteData.put("note_title", note.getNote_title());
+            noteData.put("note_body", note.getNote_body());
+            noteData.put("note_date", note.getNote_date().toString());
+            noteData.put("note_last_date", note.getNote_last_date().toString());
+            noteData.put("note_pic_url", note.getNote_pic_url());
+            noteData.put("note_id", note.getNote_id());
+            if (note.getNote_location() != null) {
+                Map<String, Double> locationData = new HashMap<>();
+                locationData.put("latitude", note.getNote_location().latitude);
+                locationData.put("longitude", note.getNote_location().longitude);
+                noteData.put("note_location", locationData);
+            }
+            this.getFBDb().getReference("users")
+                    .child(userId)
+                    .child("notes")
+                    .child(note.getNote_id())
+                    .setValue(noteData)
+                    .addOnSuccessListener(aVoid -> Log.d("Firebase", "Note saved successfully"))
+                    .addOnFailureListener(e -> Log.e("Firebase", "Failed to save note: " + e.getMessage()));
+        } else {
+            Log.e("Firebase", "User ID is null or empty");
+        }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void deleteCurrentNote() {
+        if (current == null) {
+            Log.e("Firebase", "No current note to delete");
+            return;
+        }
         this.getNotes().remove(current);
+        this.getAdapter().notifyDataSetChanged();
+        if (userId != null && !userId.isEmpty()) {
+            this.getFBDb().getReference("users")
+                    .child(userId)
+                    .child("notes")
+                    .child(current.getNote_id())
+                    .removeValue()
+                    .addOnSuccessListener(aVoid -> Log.d("Firebase", "Note deleted successfully"))
+                    .addOnFailureListener(e -> Log.e("Firebase", "Failed to delete note: " + e.getMessage()));
+        } else {
+            Log.e("Firebase", "User ID is null or empty");
+        }
         this.setCurrent(null);
-        //add in firebase
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void updateNote(NoteItem updatedNote) {
-        this.getCurrent().setNote_body(updatedNote.getNote_body()).setNote_title(updatedNote.getNote_title()).setNote_last_date(updatedNote.getNote_last_date());
-        //update in firebase
-    }
+        if (current == null) {
+            Log.e("Firebase", "No current note to update");
+            return;
+        }
 
+        // Update local note
+        this.getCurrent()
+                .setNote_body(updatedNote.getNote_body())
+                .setNote_title(updatedNote.getNote_title())
+                .setNote_last_date(updatedNote.getNote_last_date());
+
+        // Re-sort the list since last_date might have changed
+        this.notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
+        this.getAdapter().notifyDataSetChanged();
+        // Update in Firebase
+        if (userId != null && !userId.isEmpty()) {
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("note_title", current.getNote_title());
+            updates.put("note_body", current.getNote_body());
+            updates.put("note_last_date", current.getNote_last_date().toString());
+
+            this.getFBDb().getReference("users")
+                    .child(userId)
+                    .child("notes")
+                    .child(current.getNote_id())
+                    .updateChildren(updates)
+                    .addOnSuccessListener(aVoid -> Log.d("Firebase", "Note updated successfully"))
+                    .addOnFailureListener(e -> Log.e("Firebase", "Failed to update note: " + e.getMessage()));
+        } else {
+            Log.e("Firebase", "User ID is null or empty");
+        }
+    }
 
     public String parseDateToString(LocalDateTime noteDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH);
         return noteDate.format(formatter);
     }
+
+    public interface DataLoadListener {
+        void onDataLoaded();
+    }
+
+    private DataLoadListener dataLoadListener;
+
+    public void setDataLoadListener(DataLoadListener listener) {
+        this.dataLoadListener = listener;
+    }
+
+
+    public void loadNotesFromFirebase() {
+        if (userId == null || userId.isEmpty()) {
+            Log.e("Firebase", "User ID is null or empty");
+            return;
+        }
+
+        DatabaseReference notesRef = this.getFBDb().getReference("users").child(userId).child("notes");
+        notesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<NoteItem> loadedNotes = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    try {
+                        String noteTitle = snapshot.child("note_title").getValue(String.class);
+                        String noteBody = snapshot.child("note_body").getValue(String.class);
+                        String noteDateStr = snapshot.child("note_date").getValue(String.class);
+                        String noteLastDateStr = snapshot.child("note_last_date").getValue(String.class);
+                        String notePicUrl = snapshot.child("note_pic_url").getValue(String.class);
+                        String noteId = snapshot.child("note_id").getValue(String.class);
+                        Double lat = snapshot.child("note_location").child("latitude").getValue(Double.class);
+                        Double lon = snapshot.child("note_location").child("longitude").getValue(Double.class);
+                        if (noteTitle != null && noteBody != null && noteDateStr != null && lat != null && lon != null) {
+                            LocalDateTime noteDate = LocalDateTime.parse(noteDateStr);
+                            LocalDateTime noteLastDate = noteLastDateStr != null ? LocalDateTime.parse(noteLastDateStr) : noteDate;
+                            LatLng location = new LatLng(lat, lon);
+                            NoteItem note = new NoteItem(noteTitle, noteBody, noteDate, noteLastDate, notePicUrl, location, noteId);
+                            loadedNotes.add(note);
+                        }
+                    } catch (Exception e) {
+                        Log.e("Firebase", "Error parsing note: " + e.getMessage());
+                    }
+                }
+                notes = loadedNotes;
+                notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
+                Log.d("Firebase", "Notes loaded: " + notes.size());
+
+                // Notify the UI that data has been loaded
+                if (dataLoadListener != null) {
+                    dataLoadListener.onDataLoaded();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("Firebase", "Failed to load notes: " + databaseError.getMessage());
+            }
+        });
+    }
+
+
 }

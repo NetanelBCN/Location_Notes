@@ -31,10 +31,10 @@ public class ListFragment extends Fragment {
     private FragmentListBinding binding;
     private FloatingActionButton Note_FAB_add;
     private RecyclerView ListRVNotes;
-    private GenericAdapter<NoteItem> adapter;
     private MaterialTextView note_card_title;
     private MaterialTextView note_card_description;
     private MaterialTextView note_card_MTV_created;
+    private DataManager dataManager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -45,11 +45,13 @@ public class ListFragment extends Fragment {
 
         binding = FragmentListBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        dataManager = DataManager.getInstance();
         findViews();
         setupClicks();
 
         List<NoteItem> notes = DataManager.getInstance().getNotes();
-        adapter = RecyclerViewUtils.setupRecyclerView(
+
+        GenericAdapter<NoteItem> adapter = RecyclerViewUtils.setupRecyclerView(
                 ListRVNotes,
                 notes,
                 R.layout.note_card,
@@ -63,6 +65,7 @@ public class ListFragment extends Fragment {
                 },
                 (item, position) -> editNote(item)
         );
+        this.dataManager.setAdapter(adapter);
         ListRVNotes.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         ListRVNotes.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
@@ -95,7 +98,7 @@ public class ListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        adapter.notifyDataSetChanged();
+        this.dataManager.getAdapter().notifyDataSetChanged();
     }
 
     @Override

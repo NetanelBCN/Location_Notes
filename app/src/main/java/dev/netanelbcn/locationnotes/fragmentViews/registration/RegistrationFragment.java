@@ -19,10 +19,12 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseUser;
 
 import dev.netanelbcn.locationnotes.R;
 import dev.netanelbcn.locationnotes.databinding.FragmentRegistrationBinding;
 import dev.netanelbcn.locationnotes.fragmentViews.list.ListViewModel;
+import dev.netanelbcn.locationnotes.utilities.DataManager;
 import dev.netanelbcn.locationnotes.utilities.FBManager;
 import dev.netanelbcn.locationnotes.utilities.Validator;
 import dev.netanelbcn.locationnotes.views.MainActivity;
@@ -30,10 +32,11 @@ import dev.netanelbcn.locationnotes.views.MainActivity;
 public class RegistrationFragment extends Fragment {
 
 
-    private FBManager fbManager;
+    private DataManager dataManager;
     private Validator validator;
     private TextInputEditText RegistrationTIETMail;
     private TextInputEditText RegistrationTIETPassword;
+    private TextInputEditText RegistrationTIETFullName;
     private MaterialButton RegistrationMBReg;
     private ShapeableImageView RegistrationSIVBackground;
     private MaterialTextView RegistrationMTVAlert;
@@ -49,7 +52,7 @@ public class RegistrationFragment extends Fragment {
 
         binding = FragmentRegistrationBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        fbManager = FBManager.getInstance();
+        dataManager = DataManager.getInstance();
         validator = Validator.getInstance();
         bindViews();
         setBackgroundImage();
@@ -65,6 +68,7 @@ public class RegistrationFragment extends Fragment {
         this.RegistrationMTVGotoLogin = binding.RegistrationMTVGotoLogin;
         this.RegistrationTIETMail = binding.RegistrationTIETMail;
         this.RegistrationMBReg = binding.RegistrationMBReg;
+        this.RegistrationTIETFullName=binding.RegistrationTIETFullName;
     }
 
     ;
@@ -87,16 +91,27 @@ public class RegistrationFragment extends Fragment {
             if (validateRegArgs()) {
                 String mail = this.RegistrationTIETMail.getText().toString().trim();
                 String password = this.RegistrationTIETPassword.getText().toString().trim();
-                register(mail, password);
+                String name = this.RegistrationTIETFullName.getText().toString().trim();
+                register(mail, password,name);
             }
         });
 
     }
 
-    private void register(String mail, String password) {
-        fbManager.getmAuth().createUserWithEmailAndPassword(mail, password)
+    private void register(String mail, String password, String name) {
+        dataManager.getFbManager().getmAuth().createUserWithEmailAndPassword(mail, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        String uid = dataManager.getFbManager().getmAuth().getCurrentUser().getUid();
+                        DataManager.getInstance().setUserId(uid);
+                        dataManager.setUserName(name);
+
+                        // ✅ Save the user's name to the database
+                        dataManager.getFBDb().getReference("users")
+                                .child(uid)
+                                .child("name")
+                                .setValue(name);
+
                         Toast.makeText(requireContext(), "Registration successful!", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(requireContext(), MainActivity.class);
                         startActivity(intent);
@@ -117,18 +132,19 @@ public class RegistrationFragment extends Fragment {
 
     private boolean validateRegArgs() {
         if (!checkNotEmptyRegFields()) {
-            this.RegistrationTIETMail.setText("Please fill all fields");
+            this.RegistrationMTVAlert.setText("Please fill all fields");
             return false;
         }
         if (!validator.isMailFormatValid(this.RegistrationTIETMail)) {
             this.RegistrationMTVAlert.setText("Invalid mail format");
             return false;
         }
+
         return true;
     }
 
     private boolean checkNotEmptyRegFields() {
-        return validator.isInputBarValueValid(this.RegistrationTIETMail) && validator.isInputBarValueValid(this.RegistrationTIETMail);
+        return validator.isInputBarValueValid(this.RegistrationTIETMail) && validator.isInputBarValueValid(this.RegistrationTIETMail)&&validator.isInputBarValueValid(this.RegistrationTIETFullName);
 
     }
 

@@ -8,11 +8,20 @@ import java.util.UUID;
 public class NoteItem {
     private String note_title;
     private String note_body;
+
+    public NoteItem setNote_id(String note_id) {
+        this.note_id = note_id;
+        return this;
+    }
+
     private LocalDateTime note_date;
     private LocalDateTime note_last_date;
 
     private String note_pic_url;
     private LatLng note_location;
+
+
+
 
     public LocalDateTime getNote_last_date() {
         return note_last_date;
