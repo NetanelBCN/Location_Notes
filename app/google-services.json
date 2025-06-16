@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "776151206131",
+    "project_id": "location-notes-d0169",
+    "storage_bucket": "location-notes-d0169.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776151206131:android:8a2839c379fd2ed8294f86",
+        "android_client_info": {
+          "package_name": "dev.netanelbcn.locationnotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "776151206131-itptdv1g816li8nj8sclmkpnb4s7u7fq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBa8tc6ex1ahfJ98aeBP-9UCZf8nzo-1pU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "776151206131-itptdv1g816li8nj8sclmkpnb4s7u7fq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
