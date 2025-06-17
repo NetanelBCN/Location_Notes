@@ -5,7 +5,9 @@
     android:layout_height="match_parent"
     android:background="#F2F2F2"
     android:fillViewport="true"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:scrollbars="vertical"
+    >
 
 
     <LinearLayout
@@ -117,6 +119,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="40dp"
             android:gravity="end"
             android:orientation="horizontal"
             android:weightSum="2">
