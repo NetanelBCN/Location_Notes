@@ -112,11 +112,12 @@ LocationNotes/
 ## Contributing
 Contributions are welcome! Please open issues or submit pull requests.
 
+## Authors
+
+- Netanel Boris Cohen Niazov
+
 ## License
 
 Copyright (c) 2024 Netanel Boris Cohen Niazov 
 
 
-## Authors
-
-- Netanel Boris Cohen Niazov 
