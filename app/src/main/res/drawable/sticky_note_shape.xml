@@ -4,22 +4,16 @@
     android:height="200dp"
     android:viewportWidth="100"
     android:viewportHeight="100">
-
-    <!-- Shadow with transparency -->
     <path
-        android:fillColor="#888888"
+        android:fillColor="@color/gray"
         android:fillAlpha="0.4"
         android:pathData="M3,3 L103,3 L103,103 L3,103 Z" />
-
-    <!-- Yellow background with transparency -->
     <path
-        android:fillColor="#FFF176"
+        android:fillColor="@color/yellow"
         android:fillAlpha="0.85"
         android:pathData="M0,0 L100,0 L100,100 L0,100 Z" />
-
-    <!-- Border with transparency -->
     <path
-        android:strokeColor="#000000"
+        android:strokeColor="@color/black"
         android:strokeWidth="2"
         android:strokeAlpha="0.8"
         android:fillColor="@android:color/transparent"
