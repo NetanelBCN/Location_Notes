@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -89,11 +90,11 @@
                 android:id="@+id/Registration_MB_reg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:background="#52BD17"
-                android:elevation="2dp"
+                android:layout_below="@+id/Main_MTV_title"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
                 android:text="@string/reg"
-                android:textColor="@color/black" />
+                app:cornerRadius="20dp" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/Registration_MTV_alert"

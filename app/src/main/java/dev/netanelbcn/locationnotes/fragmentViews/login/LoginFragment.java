@@ -49,7 +49,7 @@ public class LoginFragment extends Fragment {
         View root = binding.getRoot();
         dataManager = DataManager.getInstance();
         validator = Validator.getInstance();
-        bindViews();
+        findViews();
         setBackgroundImage();
         setupClicks();
         return root;
@@ -88,7 +88,7 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    private void bindViews() {
+    private void findViews() {
         this.LoginMTVGotoReg = binding.LoginMTVGotoReg;
         this.LoginMBLogin = binding.LoginMBLogin;
         this.LoginMTVAlert = binding.LoginMTVAlert;
@@ -136,7 +136,7 @@ public class LoginFragment extends Fragment {
             this.LoginMTVAlert.setText("Please fill all fields");
             return false;
         }
-        if (!validator.isMailFormatValid(this.LoginTIETMail)) {
+        if (validator.isMailFormatValid(this.LoginTIETMail)) {
             this.LoginMTVAlert.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
             this.LoginMTVAlert.setText("Invalid mail format");
             return false;

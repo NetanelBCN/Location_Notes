@@ -19,13 +19,11 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseUser;
 
 import dev.netanelbcn.locationnotes.R;
 import dev.netanelbcn.locationnotes.databinding.FragmentRegistrationBinding;
 import dev.netanelbcn.locationnotes.fragmentViews.list.ListViewModel;
 import dev.netanelbcn.locationnotes.utilities.DataManager;
-import dev.netanelbcn.locationnotes.utilities.FBManager;
 import dev.netanelbcn.locationnotes.utilities.Validator;
 import dev.netanelbcn.locationnotes.views.MainActivity;
 
@@ -54,14 +52,14 @@ public class RegistrationFragment extends Fragment {
         View root = binding.getRoot();
         dataManager = DataManager.getInstance();
         validator = Validator.getInstance();
-        bindViews();
+        findViews();
         setBackgroundImage();
         getMailFromSignIn();
         setupClicks();
         return root;
     }
 
-    private void bindViews() {
+    private void findViews() {
         this.RegistrationTIETPassword = binding.RegistrationTIETPassword;
         this.RegistrationSIVBackground = binding.RegistrationSIVBackground;
         this.RegistrationMTVAlert = binding.RegistrationMTVAlert;
@@ -105,13 +103,10 @@ public class RegistrationFragment extends Fragment {
                         String uid = dataManager.getFbManager().getmAuth().getCurrentUser().getUid();
                         DataManager.getInstance().setUserId(uid);
                         dataManager.setUserName(name);
-
-                        // ✅ Save the user's name to the database
                         dataManager.getFBDb().getReference("users")
                                 .child(uid)
                                 .child("name")
                                 .setValue(name);
-
                         Toast.makeText(requireContext(), "Registration successful!", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(requireContext(), MainActivity.class);
                         startActivity(intent);
@@ -135,17 +130,15 @@ public class RegistrationFragment extends Fragment {
             this.RegistrationMTVAlert.setText("Please fill all fields");
             return false;
         }
-        if (!validator.isMailFormatValid(this.RegistrationTIETMail)) {
+        if (validator.isMailFormatValid(this.RegistrationTIETMail)) {
             this.RegistrationMTVAlert.setText("Invalid mail format");
             return false;
         }
-
         return true;
     }
 
     private boolean checkNotEmptyRegFields() {
         return validator.isInputBarValueValid(this.RegistrationTIETMail) && validator.isInputBarValueValid(this.RegistrationTIETMail)&&validator.isInputBarValueValid(this.RegistrationTIETFullName);
-
     }
 
     private void setupGotoSignInClick() {

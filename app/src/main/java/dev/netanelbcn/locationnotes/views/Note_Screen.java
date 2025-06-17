@@ -49,13 +49,11 @@ public class Note_Screen extends AppCompatActivity {
     private MaterialButton Note_MB_attach;
     private MaterialButton Note_MB_delete;
     private MaterialButton Note_MB_save;
-
     private DataManager dataManager;
     private Validator validator;
     private FusedLocationProviderClient fusedLocationClient;
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
-
     private String tempTitle;
     private String tempBody;
     private Uri selectedImageUri;
@@ -65,17 +63,14 @@ public class Note_Screen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_note_screen);
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
         dataManager = DataManager.getInstance();
         validator = Validator.getInstance();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
         findViews();
         fillData();
         setupClicks();
@@ -173,7 +168,8 @@ public class Note_Screen extends AppCompatActivity {
 
     private void fetchLocationAndUploadImageAndSave(String title, String body) {
         LatLng fallback = new LatLng(31.7683, 35.2137);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
 
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(location -> {
@@ -189,6 +185,7 @@ public class Note_Screen extends AppCompatActivity {
                     }
                 });
     }
+
     private void setUIEnabled(boolean enabled) {
         Note_TIET_title.setEnabled(enabled);
         Note_TIET_body.setEnabled(enabled);
@@ -196,7 +193,6 @@ public class Note_Screen extends AppCompatActivity {
         Note_MB_delete.setEnabled(enabled);
         Note_MB_save.setEnabled(enabled);
     }
-
 
     private void uploadImageToFirebase(Uri imageUri, OnImageUploadComplete callback) {
         setUIEnabled(false);
@@ -223,8 +219,6 @@ public class Note_Screen extends AppCompatActivity {
                 });
     }
 
-
-
     private void saveNoteWithLocation(String title, String body, LatLng location, String imageUrl) {
         NoteItem note = new NoteItem()
                 .setNote_title(title)
@@ -243,7 +237,6 @@ public class Note_Screen extends AppCompatActivity {
             dataManager.updateNote(note);
             dataManager.setCurrent(null);
         }
-
         finish();
     }
 
@@ -251,7 +244,6 @@ public class Note_Screen extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE &&
                 grantResults.length > 0 &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -265,7 +257,6 @@ public class Note_Screen extends AppCompatActivity {
                 granted = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED;
             }
-
             if (granted) {
                 openGallery();
             } else {

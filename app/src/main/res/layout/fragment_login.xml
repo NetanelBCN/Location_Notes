@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragmentViews.login.LoginFragment">
 
     <com.google.android.material.imageview.ShapeableImageView
@@ -73,24 +74,26 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/i_don_t_have_an_account"
-                android:textColor="#3171E7"
+                android:textColor="#0470FF"
                 android:textStyle="bold" />
+
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/Login_MB_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:background="#52BD17"
-                android:elevation="2dp"
-                android:text="@string/login"
-                android:textColor="@color/black" />
+                android:text="@string/sign_in"
+                app:cornerRadius="20dp"
+                android:layout_below="@+id/Main_MTV_title"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/Login_MTV_alert"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:textStyle="bold"
                 android:textColor="#DB1D1D" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>

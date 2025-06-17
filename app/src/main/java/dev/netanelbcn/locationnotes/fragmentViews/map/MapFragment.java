@@ -36,8 +36,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public final double DEFAULT_LON = 35.217018;
     private final LatLng DEFAULT_LOC = new LatLng(DEFAULT_LAT, DEFAULT_LON);
     private MarkerOptions markerOptions;
-
-
     private FragmentMapBinding binding;
     private DataManager dataManager;
 
@@ -46,7 +44,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                              ViewGroup container, Bundle savedInstanceState) {
         postponeEnterTransition();
 
-        MapViewModel mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
+        //MapViewModel mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         dataManager = DataManager.getInstance();
@@ -132,6 +130,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
         return result;
     }
+
     private void refreshMapMarkers() {
         myGoogleMap.clear();
         for (NoteItem note : dataManager.getNotes()) {

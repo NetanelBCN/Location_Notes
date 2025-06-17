@@ -3,19 +3,21 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="title_login">Login</string>
-    <string name="login">Login</string>
+    <string name="sign_in">Login</string>
+    <string name="title_login">Sign In</string>
     <string name="i_don_t_have_an_account"><u>I don\'t have an account</u></string>
     <string name="password">Password</string>
     <string name="email">Email</string>
     <string name="full_name">Full name</string>
     <string name="i_do_have_an_account"><u>I already have an account</u></string>
     <string name="reg">Register</string>
-    <string name="title_reg">Registration</string>
+    <string name="title_reg">Sign Up</string>
     <string name="title_list">List</string>
     <string name="title_map">Map</string>
     <string name="add_note">Add Note</string>
     <string name="note_page">Note Page</string>
     <string name="enter_title">Enter title...</string>
     <string name="save">Save</string>
+    <string name="you_don_t_have_any_notes_yet_click_on_the_to_start">You don’t have any notes yet, \nclick on the \'+\' button to start!</string>
+    <string name="sign_out">SIGN OUT</string>
 </resources>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".fragmentViews.list.ListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,20 @@
         android:layout_marginTop="10dp"
         android:scrollbarStyle="insideOverlay"
         android:scrollbars="vertical" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/List_MTV_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="16dp"
+        android:text="@string/you_don_t_have_any_notes_yet_click_on_the_to_start"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="24sp"
+        android:visibility="gone" />
+
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/Note_FAB_add"

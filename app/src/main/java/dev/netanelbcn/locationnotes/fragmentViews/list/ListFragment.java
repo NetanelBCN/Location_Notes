@@ -9,7 +9,6 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,22 +34,19 @@ public class ListFragment extends Fragment {
     private MaterialTextView note_card_description;
     private MaterialTextView note_card_MTV_created;
     private DataManager dataManager;
+    private MaterialTextView ListMTVEmpty;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         postponeEnterTransition();
-        ListViewModel listViewModel =
-                new ViewModelProvider(this).get(ListViewModel.class);
-
         binding = FragmentListBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         dataManager = DataManager.getInstance();
         findViews();
         setupClicks();
-
         List<NoteItem> notes = DataManager.getInstance().getNotes();
-
+        adjustFillOrEmptyMode(notes);
         GenericAdapter<NoteItem> adapter = RecyclerViewUtils.setupRecyclerView(
                 ListRVNotes,
                 notes,
@@ -78,6 +74,16 @@ public class ListFragment extends Fragment {
         return root;
     }
 
+    private void adjustFillOrEmptyMode(List<NoteItem> notes) {
+        if (notes.isEmpty()) {
+            ListMTVEmpty.setVisibility(View.VISIBLE);
+            ListRVNotes.setVisibility(View.GONE);
+        } else {
+            ListMTVEmpty.setVisibility(View.GONE);
+            ListRVNotes.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void editNote(NoteItem item) {
         DataManager.getInstance().setCurrent(item);
         startActivity(new Intent(requireContext(), Note_Screen.class));
@@ -93,12 +99,14 @@ public class ListFragment extends Fragment {
     private void findViews() {
         this.Note_FAB_add = binding.NoteFABAdd;
         this.ListRVNotes = binding.ListRVNotes;
+        this.ListMTVEmpty = binding.ListMTVEmpty;
     }
 
     @Override
     public void onResume() {
         super.onResume();
         this.dataManager.getAdapter().notifyDataSetChanged();
+        adjustFillOrEmptyMode(dataManager.getNotes());
     }
 
     @Override

@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         DataManager.getInstance().setUserName(null);
         DataManager.getInstance().getNotes().clear();
         DataManager.getInstance().getAdapter().notifyDataSetChanged();
-        // Navigate back to Login/Registration screen
         Intent intent = new Intent(MainActivity.this, dev.netanelbcn.locationnotes.views.Login_Reg_Activity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // clear back stack
         startActivity(intent);

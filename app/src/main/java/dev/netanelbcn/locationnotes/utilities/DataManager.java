@@ -8,17 +8,12 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -31,14 +26,12 @@ public class DataManager {
 
     private ArrayList<NoteItem> notes;
     private GenericAdapter<NoteItem> adapter;
-
     private static DataManager instance;
     private NoteItem current;
     private final FBManager fbManager;
     private String userId;
     private String userName;
     private DataLoadListener dataLoadListener;
-
     private final LatLng defaultLocation = new LatLng(31.771959, 35.217018);
 
     public LatLng getDefaultLocation() {
@@ -47,11 +40,6 @@ public class DataManager {
 
     public GenericAdapter<NoteItem> getAdapter() {
         return adapter;
-    }
-
-    public DataManager setAdapter(GenericAdapter<NoteItem> adapter) {
-        this.adapter = adapter;
-        return this;
     }
 
     public FirebaseDatabase getFBDb() {
@@ -75,10 +63,6 @@ public class DataManager {
         return fbManager;
     }
 
-    public DataManager setUserId(String userId) {
-        this.userId = userId;
-        return this;
-    }
 
     private DataManager() {
         fbManager = FBManager.getInstance();
@@ -95,11 +79,6 @@ public class DataManager {
 
     public DataManager setCurrent(NoteItem current) {
         this.current = current;
-        return this;
-    }
-
-    public DataManager setNotes(ArrayList<NoteItem> notes) {
-        this.notes = notes;
         return this;
     }
 
@@ -204,26 +183,19 @@ public class DataManager {
             Log.e("Firebase", "No current note to update");
             return;
         }
-
-        // Update local note
         this.getCurrent()
                 .setNote_body(updatedNote.getNote_body())
                 .setNote_title(updatedNote.getNote_title())
                 .setNote_last_date(updatedNote.getNote_last_date())
                 .setNote_pic_url(updatedNote.getNote_pic_url()); // Update image URL
-
-        // Re-sort the list since last_date might have changed
         this.notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
         this.getAdapter().notifyDataSetChanged();
-
-        // Update in Firebase
         if (userId != null && !userId.isEmpty()) {
             Map<String, Object> updates = new HashMap<>();
             updates.put("note_title", current.getNote_title());
             updates.put("note_body", current.getNote_body());
             updates.put("note_last_date", current.getNote_last_date().toString());
             updates.put("note_pic_url", current.getNote_pic_url() != null ? current.getNote_pic_url() : "");
-
             this.getFBDb().getReference("users")
                     .child(userId)
                     .child("notes")
@@ -241,6 +213,20 @@ public class DataManager {
         return noteDate.format(formatter);
     }
 
+    public DataManager setUserId(String userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public DataManager setNotes(ArrayList<NoteItem> notes) {
+        this.notes = notes;
+        return this;
+    }
+
+    public DataManager setAdapter(GenericAdapter<NoteItem> adapter) {
+        this.adapter = adapter;
+        return this;
+    }
 
     public void setDataLoadListener(DataLoadListener listener) {
         this.dataLoadListener = listener;

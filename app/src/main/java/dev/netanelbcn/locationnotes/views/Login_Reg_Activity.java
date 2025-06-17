@@ -8,10 +8,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import dev.netanelbcn.locationnotes.databinding.ActivityLoginRegBinding;
 
 public class Login_Reg_Activity extends AppCompatActivity {
-
     private ActivityLoginRegBinding binding;
-
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
