@@ -38,13 +38,19 @@
             android:textSize="14sp"
           />
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/note_card_MTV_attachedPic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="12sp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/note_card_MTV_created"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Jun 15, 2025"
             android:textColor="@android:color/darker_gray"
             android:textSize="12sp" />
 

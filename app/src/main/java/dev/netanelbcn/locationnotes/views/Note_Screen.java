@@ -181,7 +181,7 @@ public class Note_Screen extends AppCompatActivity {
                         uploadImageToFirebase(selectedImageUri, imageUrl ->
                                 saveNoteWithLocation(title, body, latLng, imageUrl));
                     } else {
-                        saveNoteWithLocation(title, body, latLng, null);
+                        saveNoteWithLocation(title, body, latLng, "");
                     }
                 });
     }
@@ -230,11 +230,13 @@ public class Note_Screen extends AppCompatActivity {
         if (dataManager.getCurrent() == null) {
             dataManager.getNotes().add(note);
             dataManager.addNewNoteToDB(note);
+            dataManager.sortNotesByDate();
         } else {
             note.setNote_id(dataManager.getCurrent().getNote_id());
             note.setNote_date(dataManager.getCurrent().getNote_date());
             note.setNote_last_date(LocalDateTime.now());
             dataManager.updateNote(note);
+
             dataManager.setCurrent(null);
         }
         finish();

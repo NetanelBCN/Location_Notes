@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 public class NoteItem {

@@ -33,6 +33,7 @@ public class ListFragment extends Fragment {
     private MaterialTextView note_card_title;
     private MaterialTextView note_card_description;
     private MaterialTextView note_card_MTV_created;
+   private MaterialTextView note_card_MTV_attachedPic;
     private DataManager dataManager;
     private MaterialTextView ListMTVEmpty;
 
@@ -55,9 +56,15 @@ public class ListFragment extends Fragment {
                     this.note_card_title = holder.itemView.findViewById(R.id.note_card_title);
                     this.note_card_description = holder.itemView.findViewById(R.id.note_card_description);
                     this.note_card_MTV_created = holder.itemView.findViewById(R.id.note_card_MTV_created);
-                    note_card_title.setText(item.getNote_title());
-                    note_card_description.setText(item.getNote_body());
-                    note_card_MTV_created.setText("Created at: " + DataManager.getInstance().parseDateToString(item.getNote_date()));
+                    this.note_card_MTV_attachedPic=holder.itemView.findViewById(R.id.note_card_MTV_attachedPic);
+                    this.note_card_title.setText(item.getNote_title());
+                    this.note_card_description.setText(item.getNote_body());
+                    this.note_card_MTV_created.setText("Created at: " + DataManager.getInstance().parseDateToString(item.getNote_date()));
+                    if(!item.getNote_pic_url().trim().isEmpty())
+                       this.note_card_MTV_attachedPic.setText("Picture attached");
+                    else
+                        this.note_card_MTV_attachedPic.setText("");
+
                 },
                 (item, position) -> editNote(item)
         );
@@ -100,6 +107,7 @@ public class ListFragment extends Fragment {
         this.Note_FAB_add = binding.NoteFABAdd;
         this.ListRVNotes = binding.ListRVNotes;
         this.ListMTVEmpty = binding.ListMTVEmpty;
+
     }
 
     @Override

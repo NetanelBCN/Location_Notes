@@ -162,6 +162,7 @@ public class DataManager {
             return;
         }
         this.getNotes().remove(current);
+        sortNotesByDate();
         this.getAdapter().notifyDataSetChanged();
         if (userId != null && !userId.isEmpty()) {
             this.getFBDb().getReference("users")
@@ -188,7 +189,6 @@ public class DataManager {
                 .setNote_title(updatedNote.getNote_title())
                 .setNote_last_date(updatedNote.getNote_last_date())
                 .setNote_pic_url(updatedNote.getNote_pic_url()); // Update image URL
-        this.notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
         this.getAdapter().notifyDataSetChanged();
         if (userId != null && !userId.isEmpty()) {
             Map<String, Object> updates = new HashMap<>();
@@ -206,6 +206,10 @@ public class DataManager {
         } else {
             Log.e("Firebase", "User ID is null or empty");
         }
+    }
+
+    public void sortNotesByDate() {
+        this.notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
     }
 
     public String parseDateToString(LocalDateTime noteDate) {
