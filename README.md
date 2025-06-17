@@ -118,6 +118,6 @@ Contributions are welcome! Please open issues or submit pull requests.
 
 ## License
 
-Copyright (c) 2024 Netanel Boris Cohen Niazov 
+Copyright (c) 2025 Netanel Boris Cohen Niazov 
 
 
