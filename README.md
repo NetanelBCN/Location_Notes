@@ -113,7 +113,10 @@ LocationNotes/
 Contributions are welcome! Please open issues or submit pull requests.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Author
-- **Netanel Niazov** - Initial work
+Copyright (c) 2024 Netanel Boris Cohen Niazov 
+
+
+## Authors
+
+- Netanel Boris Cohen Niazov 
