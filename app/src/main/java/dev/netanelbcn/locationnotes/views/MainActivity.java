@@ -17,13 +17,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import dev.netanelbcn.locationnotes.R;
 import dev.netanelbcn.locationnotes.databinding.ActivityMainBinding;
-import dev.netanelbcn.locationnotes.utilities.DataManager;
+import dev.netanelbcn.locationnotes.controllers.DataManager;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private MaterialTextView Main_MTV_title;
-    private MaterialButton Main_MB_signout;
+    private MaterialButton Main_MB_signOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupClicks() {
-        this.Main_MB_signout.setOnClickListener(v -> {
+        this.Main_MB_signOut.setOnClickListener(v -> {
             signOut();
         });
     }
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void findViews() {
         this.Main_MTV_title = findViewById(R.id.Main_MTV_title);
-        this.Main_MB_signout = findViewById(R.id.Main_MB_signout);
+        this.Main_MB_signOut = findViewById(R.id.Main_MB_signOut);
     }
 
 

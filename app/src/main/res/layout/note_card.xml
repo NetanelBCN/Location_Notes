@@ -21,7 +21,7 @@
             android:ellipsize="end"
             android:maxLines="5"
             android:scrollHorizontally="false"
-            android:text="Note Title"
+            android:text="@string/note_title"
             android:textColor="@android:color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -33,10 +33,9 @@
             android:layout_marginTop="8dp"
 
             android:scrollHorizontally="false"
-            android:text="Quick description..."
+            android:text="@string/quick_description"
             android:textColor="@android:color/black"
-            android:textSize="14sp"
-          />
+            android:textSize="14sp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/note_card_MTV_attachedPic"

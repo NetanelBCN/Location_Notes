@@ -1,4 +1,4 @@
-package dev.netanelbcn.locationnotes.fragmentViews.login;
+package dev.netanelbcn.locationnotes.fragmentViews;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import dev.netanelbcn.locationnotes.R;
 import dev.netanelbcn.locationnotes.databinding.FragmentLoginBinding;
-import dev.netanelbcn.locationnotes.utilities.DataManager;
+import dev.netanelbcn.locationnotes.controllers.DataManager;
 import dev.netanelbcn.locationnotes.utilities.Validator;
 import dev.netanelbcn.locationnotes.views.MainActivity;
 

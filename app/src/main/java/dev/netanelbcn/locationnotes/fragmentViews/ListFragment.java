@@ -1,4 +1,4 @@
-package dev.netanelbcn.locationnotes.fragmentViews.list;
+package dev.netanelbcn.locationnotes.fragmentViews;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +20,7 @@ import java.util.List;
 import dev.netanelbcn.locationnotes.R;
 import dev.netanelbcn.locationnotes.databinding.FragmentListBinding;
 import dev.netanelbcn.locationnotes.models.NoteItem;
-import dev.netanelbcn.locationnotes.utilities.DataManager;
+import dev.netanelbcn.locationnotes.controllers.DataManager;
 import dev.netanelbcn.locationnotes.views.Note_Screen;
 import dev.netanelbcn.myrv.GenericAdapter;
 import dev.netanelbcn.myrv.RecyclerViewUtils;

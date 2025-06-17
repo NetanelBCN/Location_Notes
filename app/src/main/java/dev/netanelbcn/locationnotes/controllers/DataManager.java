@@ -1,4 +1,4 @@
-package dev.netanelbcn.locationnotes.utilities;
+package dev.netanelbcn.locationnotes.controllers;
 
 import android.annotation.SuppressLint;
 import android.util.Log;
@@ -20,6 +20,7 @@ import java.util.Map;
 
 import dev.netanelbcn.locationnotes.interfaces.DataLoadListener;
 import dev.netanelbcn.locationnotes.models.NoteItem;
+import dev.netanelbcn.locationnotes.utilities.FBManager;
 import dev.netanelbcn.myrv.GenericAdapter;
 
 public class DataManager {

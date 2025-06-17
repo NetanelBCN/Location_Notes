@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragmentViews.registration.RegistrationFragment">
+    tools:context=".fragmentViews.RegistrationFragment">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/Registration_SIV_background"
@@ -83,7 +83,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="@string/i_do_have_an_account"
-                android:textColor="#3171E7"
+                android:textColor="@color/blue"
                 android:textStyle="bold" />
 
             <com.google.android.material.button.MaterialButton
@@ -101,7 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:textColor="#DB1D1D" />
+                android:textColor="@color/red" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
     </LinearLayout>

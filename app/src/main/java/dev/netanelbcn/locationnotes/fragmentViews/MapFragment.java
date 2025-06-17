@@ -1,4 +1,4 @@
-package dev.netanelbcn.locationnotes.fragmentViews.map;
+package dev.netanelbcn.locationnotes.fragmentViews;
 
 import android.content.Intent;
 import android.location.Address;
@@ -11,7 +11,6 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,7 +25,7 @@ import java.util.List;
 
 import dev.netanelbcn.locationnotes.databinding.FragmentMapBinding;
 import dev.netanelbcn.locationnotes.models.NoteItem;
-import dev.netanelbcn.locationnotes.utilities.DataManager;
+import dev.netanelbcn.locationnotes.controllers.DataManager;
 import dev.netanelbcn.locationnotes.views.Note_Screen;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
@@ -43,8 +42,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         postponeEnterTransition();
-
-        //MapViewModel mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         dataManager = DataManager.getInstance();

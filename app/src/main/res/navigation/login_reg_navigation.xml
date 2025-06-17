@@ -4,15 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/login_reg"
     app:startDestination="@id/navigation_login">
-    >
+
     <fragment
         android:id="@+id/navigation_login"
-        android:name="dev.netanelbcn.locationnotes.fragmentViews.login.LoginFragment"
+        android:name="dev.netanelbcn.locationnotes.fragmentViews.LoginFragment"
         android:label="@string/title_login"
         tools:layout="@layout/fragment_login" />
     <fragment
         android:id="@+id/navigation_registration"
-        android:name="dev.netanelbcn.locationnotes.fragmentViews.registration.RegistrationFragment"
+        android:name="dev.netanelbcn.locationnotes.fragmentViews.RegistrationFragment"
         android:label="@string/title_reg"
         tools:layout="@layout/fragment_registration" />
 

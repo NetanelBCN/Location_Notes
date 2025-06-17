@@ -1,4 +1,4 @@
-package dev.netanelbcn.locationnotes.fragmentViews.registration;
+package dev.netanelbcn.locationnotes.fragmentViews;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -22,8 +21,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 import dev.netanelbcn.locationnotes.R;
 import dev.netanelbcn.locationnotes.databinding.FragmentRegistrationBinding;
-import dev.netanelbcn.locationnotes.fragmentViews.list.ListViewModel;
-import dev.netanelbcn.locationnotes.utilities.DataManager;
+import dev.netanelbcn.locationnotes.controllers.DataManager;
 import dev.netanelbcn.locationnotes.utilities.Validator;
 import dev.netanelbcn.locationnotes.views.MainActivity;
 
@@ -45,9 +43,6 @@ public class RegistrationFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        ListViewModel listViewModel =
-                new ViewModelProvider(this).get(ListViewModel.class);
-
         binding = FragmentRegistrationBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         dataManager = DataManager.getInstance();

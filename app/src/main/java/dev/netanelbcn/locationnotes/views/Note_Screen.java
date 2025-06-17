@@ -1,7 +1,6 @@
 package dev.netanelbcn.locationnotes.views;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -33,7 +32,7 @@ import java.util.UUID;
 import dev.netanelbcn.locationnotes.R;
 import dev.netanelbcn.locationnotes.interfaces.OnImageUploadComplete;
 import dev.netanelbcn.locationnotes.models.NoteItem;
-import dev.netanelbcn.locationnotes.utilities.DataManager;
+import dev.netanelbcn.locationnotes.controllers.DataManager;
 import dev.netanelbcn.locationnotes.utilities.Validator;
 
 public class Note_Screen extends AppCompatActivity {
