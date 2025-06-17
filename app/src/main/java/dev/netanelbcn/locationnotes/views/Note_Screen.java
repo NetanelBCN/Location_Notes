@@ -151,9 +151,8 @@ public class Note_Screen extends AppCompatActivity {
                 .setNote_location(location);
 
         if (dataManager.getCurrent() == null) {
-
-//            this.dataManager.getNotes().add(note);
-//            this.dataManager.getNotes().sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
+            this.dataManager.getNotes().add(note);
+            //this.dataManager.getNotes().sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
 //            this.dataManager.getAdapter().notifyDataSetChanged();
             dataManager.addNewNoteToDB(note);
         } else {

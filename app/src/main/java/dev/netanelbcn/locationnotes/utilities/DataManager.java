@@ -3,6 +3,8 @@ package dev.netanelbcn.locationnotes.utilities;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,7 +40,6 @@ public class DataManager {
     private String userName;
 
 
-
     private final LatLng defaultLocation = new LatLng(31.771959, 35.217018);
 
     public LatLng getDefaultLocation() {
@@ -57,6 +58,7 @@ public class DataManager {
     public FirebaseDatabase getFBDb() {
         return this.fbManager.getFBDb();
     }
+
     public String getUserName() {
         return userName;
     }
@@ -111,17 +113,43 @@ public class DataManager {
     }
 
     public void loadGeneralData() {
-        loadNotesFromFirebase();
-        Log.d("qwewq", this.getNotes().toString());
+        notes.clear();
+        getFBDb().getReference("users").child(userId).child("notes")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot snap : snapshot.getChildren()) {
+                            try {
+                                String noteTitle = snap.child("note_title").getValue(String.class);
+                                String noteBody = snap.child("note_body").getValue(String.class);
+                                String noteDateStr = snap.child("note_date").getValue(String.class);
+                                String noteLastDateStr = snap.child("note_last_date").getValue(String.class);
+                                String notePicUrl = snap.child("note_pic_url").getValue(String.class);
+                                String noteId = snap.child("note_id").getValue(String.class);
+                                Double lat = snap.child("note_location").child("latitude").getValue(Double.class);
+                                Double lon = snap.child("note_location").child("longitude").getValue(Double.class);
+                                if (noteTitle != null && noteBody != null && noteDateStr != null && lat != null && lon != null) {
+                                    LocalDateTime noteDate = LocalDateTime.parse(noteDateStr);
+                                    LocalDateTime noteLastDate = noteLastDateStr != null ? LocalDateTime.parse(noteLastDateStr) : noteDate;
+                                    LatLng location = new LatLng(lat, lon);
+                                    NoteItem note = new NoteItem(noteTitle, noteBody, noteDate, noteLastDate, notePicUrl, location, noteId);
+                                    notes.add(note);
+                                }
+                            } catch (Exception e) {
+                                Log.e("DataLoad", "Error parsing note: " + e.getMessage());
+                            }
+                        }
+                        notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
+                        if (dataLoadListener != null) dataLoadListener.onDataLoaded();
+                    }
 
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("DataLoad", "Firebase error: " + error.getMessage());
+                    }
+                });
     }
 
 
-    @SuppressLint("NotifyDataSetChanged")
     public void addNewNoteToDB(NoteItem note) {
-        this.getNotes().add(note);
-        this.getNotes().sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
-        this.getAdapter().notifyDataSetChanged();
         if (userId != null && !userId.isEmpty()) {
             Map<String, Object> noteData = new HashMap<>();
             noteData.put("note_title", note.getNote_title());
@@ -218,56 +246,6 @@ public class DataManager {
 
     public void setDataLoadListener(DataLoadListener listener) {
         this.dataLoadListener = listener;
-    }
-
-
-    public void loadNotesFromFirebase() {
-        if (userId == null || userId.isEmpty()) {
-            Log.e("Firebase", "User ID is null or empty");
-            return;
-        }
-
-        DatabaseReference notesRef = this.getFBDb().getReference("users").child(userId).child("notes");
-        notesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<NoteItem> loadedNotes = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    try {
-                        String noteTitle = snapshot.child("note_title").getValue(String.class);
-                        String noteBody = snapshot.child("note_body").getValue(String.class);
-                        String noteDateStr = snapshot.child("note_date").getValue(String.class);
-                        String noteLastDateStr = snapshot.child("note_last_date").getValue(String.class);
-                        String notePicUrl = snapshot.child("note_pic_url").getValue(String.class);
-                        String noteId = snapshot.child("note_id").getValue(String.class);
-                        Double lat = snapshot.child("note_location").child("latitude").getValue(Double.class);
-                        Double lon = snapshot.child("note_location").child("longitude").getValue(Double.class);
-                        if (noteTitle != null && noteBody != null && noteDateStr != null && lat != null && lon != null) {
-                            LocalDateTime noteDate = LocalDateTime.parse(noteDateStr);
-                            LocalDateTime noteLastDate = noteLastDateStr != null ? LocalDateTime.parse(noteLastDateStr) : noteDate;
-                            LatLng location = new LatLng(lat, lon);
-                            NoteItem note = new NoteItem(noteTitle, noteBody, noteDate, noteLastDate, notePicUrl, location, noteId);
-                            loadedNotes.add(note);
-                        }
-                    } catch (Exception e) {
-                        Log.e("Firebase", "Error parsing note: " + e.getMessage());
-                    }
-                }
-                notes = loadedNotes;
-                notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
-                Log.d("Firebase", "Notes loaded: " + notes.size());
-
-                // Notify the UI that data has been loaded
-                if (dataLoadListener != null) {
-                    dataLoadListener.onDataLoaded();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("Firebase", "Failed to load notes: " + databaseError.getMessage());
-            }
-        });
     }
 
 
