@@ -108,6 +108,9 @@ LocationNotes/
 4. Fill in the title, body, and optionally attach an image.
 5. Save the note to upload data and image to Firebase.
 6. View your notes in the list or on the map.
+   
+## Known Issues
+- When creating multiple notes at the same location, they share a single pin on the map. You can switch between notes by clicking on the pin.
 
 ## Contributing
 Contributions are welcome! Please open issues or submit pull requests.
