@@ -116,6 +116,7 @@ public class DataManager {
 
     }
 
+
     @SuppressLint("NotifyDataSetChanged")
     public void addNewNoteToDB(NoteItem note) {
         this.getNotes().add(note);

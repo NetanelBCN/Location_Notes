@@ -3,13 +3,14 @@ package dev.netanelbcn.locationnotes.fragmentViews.login;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -20,11 +21,12 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import dev.netanelbcn.locationnotes.R;
 import dev.netanelbcn.locationnotes.databinding.FragmentLoginBinding;
 import dev.netanelbcn.locationnotes.utilities.DataManager;
-import dev.netanelbcn.locationnotes.utilities.FBManager;
 import dev.netanelbcn.locationnotes.utilities.Validator;
 import dev.netanelbcn.locationnotes.views.MainActivity;
 
@@ -40,7 +42,6 @@ public class LoginFragment extends Fragment {
     private TextInputEditText LoginTIETPassword;
     private ShapeableImageView LoginSIVBackground;
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -52,6 +53,39 @@ public class LoginFragment extends Fragment {
         setBackgroundImage();
         setupClicks();
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            dataManager.setUserId(uid);
+            this.LoginMTVAlert.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
+            this.LoginMTVAlert.setText("Please wait, Auto-login...");
+
+            dataManager.setDataLoadListener(() -> {
+                dataManager.getFBDb().getReference("users")
+                        .child(uid)
+                        .child("name")
+                        .get()
+                        .addOnSuccessListener(snapshot -> {
+                            String name = snapshot.getValue(String.class);
+                            if (name != null) {
+                                dataManager.setUserName(name);
+                            }
+                            goToMainActivity();
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("AutoLogin", "Failed to load user name: " + e.getMessage());
+                            goToMainActivity();
+                        });
+            });
+
+            dataManager.loadGeneralData();
+        }
     }
 
     private void bindViews() {
@@ -73,11 +107,9 @@ public class LoginFragment extends Fragment {
             NavController navController = NavHostFragment.findNavController(LoginFragment.this);
             if (this.LoginTIETMail.getText() != null && !this.LoginTIETMail.getText().toString().trim().isEmpty()) {
                 moveWithMailToReg(navController);
-                Bundle bundle = new Bundle();
-                bundle.putString("email", this.LoginTIETMail.getText().toString().trim());
-                navController.navigate(R.id.navigation_registration, bundle);
-            } else
+            } else {
                 navController.navigate(R.id.navigation_registration);
+            }
         });
     }
 
@@ -86,7 +118,6 @@ public class LoginFragment extends Fragment {
         bundle.putString("email", this.LoginTIETMail.getText().toString().trim());
         navController.navigate(R.id.navigation_registration, bundle);
     }
-
 
     private void setupLoginClick() {
         this.LoginMBLogin.setOnClickListener(v -> {
@@ -101,16 +132,12 @@ public class LoginFragment extends Fragment {
 
     private boolean validateLoginArgs() {
         if (!checkNotEmptyLoginFields()) {
-            this.LoginMTVAlert.setTextColor(
-                    ContextCompat.getColor(requireContext(), R.color.red)
-            );
+            this.LoginMTVAlert.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
             this.LoginMTVAlert.setText("Please fill all fields");
             return false;
         }
         if (!validator.isMailFormatValid(this.LoginTIETMail)) {
-            this.LoginMTVAlert.setTextColor(
-                    ContextCompat.getColor(requireContext(), R.color.red)
-            );
+            this.LoginMTVAlert.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
             this.LoginMTVAlert.setText("Invalid mail format");
             return false;
         }
@@ -118,44 +145,53 @@ public class LoginFragment extends Fragment {
     }
 
     private boolean checkNotEmptyLoginFields() {
-        return
-                validator.isInputBarValueValid(this.LoginTIETMail) && validator.isInputBarValueValid(this.LoginTIETPassword);
+        return validator.isInputBarValueValid(this.LoginTIETMail) &&
+                validator.isInputBarValueValid(this.LoginTIETPassword);
     }
 
     private void login(String mail, String password) {
-        // Show loading state
         this.LoginMBLogin.setEnabled(false);
-        this.LoginMTVAlert.setTextColor(
-                ContextCompat.getColor(requireContext(), R.color.black)
-        );
+        this.LoginMTVAlert.setTextColor(ContextCompat.getColor(requireContext(), R.color.black));
         this.LoginMTVAlert.setText("Logging in...");
 
         dataManager.getFbManager().getmAuth().signInWithEmailAndPassword(mail, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        DataManager.getInstance().setUserId(dataManager.getFbManager().getmAuth().getCurrentUser().getUid());
-                        DataManager.getInstance().setDataLoadListener(new DataManager.DataLoadListener() {
-                            @Override
-                            public void onDataLoaded() {
-                                // Data loaded successfully - now navigate to main activity
-                                if (getActivity() != null && !getActivity().isFinishing()) {
-                                    Intent intent = new Intent(requireContext(), MainActivity.class);
-                                    startActivity(intent);
-                                    requireActivity().finish();
-                                }
-                            }
+                        String uid = dataManager.getFbManager().getmAuth().getCurrentUser().getUid();
+                        DataManager.getInstance().setUserId(uid);
+                        this.LoginMTVAlert.setText("Loading notes...");
+
+                        DataManager.getInstance().setDataLoadListener(() -> {
+                            this.LoginMTVAlert.setText("Loading user profile...");
+                            dataManager.getFBDb().getReference("users")
+                                    .child(uid)
+                                    .child("name")
+                                    .get()
+                                    .addOnSuccessListener(snapshot -> {
+                                        String name = snapshot.getValue(String.class);
+                                        if (name != null) {
+                                            dataManager.setUserName(name);
+                                        }
+                                        goToMainActivity();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("FB_err", "Failed to load user name: " + e.getMessage());
+                                    });
                         });
-                        this.LoginMTVAlert.setText("Loading data...");
+
                         DataManager.getInstance().loadGeneralData();
                     } else {
                         this.LoginMBLogin.setEnabled(true);
-                        this.LoginMTVAlert.setTextColor(
-                                ContextCompat.getColor(requireContext(), R.color.red)
-                        );
+                        this.LoginMTVAlert.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
                         this.LoginMTVAlert.setText("Invalid user mail or password");
-                        Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    private void goToMainActivity() {
+        Intent intent = new Intent(requireContext(), MainActivity.class);
+        startActivity(intent);
+        requireActivity().finish();
     }
 
     private void hideKeyboard() {
@@ -177,7 +213,6 @@ public class LoginFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Clear the data load listener to prevent memory leaks
         if (dataManager != null) {
             dataManager.setDataLoadListener(null);
         }
