@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.play.services.maps)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

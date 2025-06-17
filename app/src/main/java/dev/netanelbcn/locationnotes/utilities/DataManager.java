@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import dev.netanelbcn.locationnotes.interfaces.DataLoadListener;
 import dev.netanelbcn.locationnotes.models.NoteItem;
 import dev.netanelbcn.myrv.GenericAdapter;
 
@@ -31,14 +32,12 @@ public class DataManager {
     private ArrayList<NoteItem> notes;
     private GenericAdapter<NoteItem> adapter;
 
-
     private static DataManager instance;
     private NoteItem current;
     private final FBManager fbManager;
-
     private String userId;
     private String userName;
-
+    private DataLoadListener dataLoadListener;
 
     private final LatLng defaultLocation = new LatLng(31.771959, 35.217018);
 
@@ -86,7 +85,6 @@ public class DataManager {
         this.notes = new ArrayList<>();
     }
 
-
     public ArrayList<NoteItem> getNotes() {
         return notes;
     }
@@ -127,6 +125,7 @@ public class DataManager {
                                 String noteId = snap.child("note_id").getValue(String.class);
                                 Double lat = snap.child("note_location").child("latitude").getValue(Double.class);
                                 Double lon = snap.child("note_location").child("longitude").getValue(Double.class);
+
                                 if (noteTitle != null && noteBody != null && noteDateStr != null && lat != null && lon != null) {
                                     LocalDateTime noteDate = LocalDateTime.parse(noteDateStr);
                                     LocalDateTime noteLastDate = noteLastDateStr != null ? LocalDateTime.parse(noteLastDateStr) : noteDate;
@@ -148,7 +147,6 @@ public class DataManager {
                 });
     }
 
-
     public void addNewNoteToDB(NoteItem note) {
         if (userId != null && !userId.isEmpty()) {
             Map<String, Object> noteData = new HashMap<>();
@@ -156,14 +154,16 @@ public class DataManager {
             noteData.put("note_body", note.getNote_body());
             noteData.put("note_date", note.getNote_date().toString());
             noteData.put("note_last_date", note.getNote_last_date().toString());
-            noteData.put("note_pic_url", note.getNote_pic_url());
+            noteData.put("note_pic_url", note.getNote_pic_url() != null ? note.getNote_pic_url() : "");
             noteData.put("note_id", note.getNote_id());
+
             if (note.getNote_location() != null) {
                 Map<String, Double> locationData = new HashMap<>();
                 locationData.put("latitude", note.getNote_location().latitude);
                 locationData.put("longitude", note.getNote_location().longitude);
                 noteData.put("note_location", locationData);
             }
+
             this.getFBDb().getReference("users")
                     .child(userId)
                     .child("notes")
@@ -209,17 +209,20 @@ public class DataManager {
         this.getCurrent()
                 .setNote_body(updatedNote.getNote_body())
                 .setNote_title(updatedNote.getNote_title())
-                .setNote_last_date(updatedNote.getNote_last_date());
+                .setNote_last_date(updatedNote.getNote_last_date())
+                .setNote_pic_url(updatedNote.getNote_pic_url()); // Update image URL
 
         // Re-sort the list since last_date might have changed
         this.notes.sort((a, b) -> b.getNote_date().compareTo(a.getNote_date()));
         this.getAdapter().notifyDataSetChanged();
+
         // Update in Firebase
         if (userId != null && !userId.isEmpty()) {
             Map<String, Object> updates = new HashMap<>();
             updates.put("note_title", current.getNote_title());
             updates.put("note_body", current.getNote_body());
             updates.put("note_last_date", current.getNote_last_date().toString());
+            updates.put("note_pic_url", current.getNote_pic_url() != null ? current.getNote_pic_url() : "");
 
             this.getFBDb().getReference("users")
                     .child(userId)
@@ -238,15 +241,8 @@ public class DataManager {
         return noteDate.format(formatter);
     }
 
-    public interface DataLoadListener {
-        void onDataLoaded();
-    }
-
-    private DataLoadListener dataLoadListener;
 
     public void setDataLoadListener(DataLoadListener listener) {
         this.dataLoadListener = listener;
     }
-
-
 }
